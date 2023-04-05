@@ -4,9 +4,9 @@
 ![ApiImage](https://appmaster.io/api/_files/PqV7MuNwv89GrZvBd4LNNK/download/)
 
 ## Installation Guide
-FastAPI installation instructions [FastAPI website](https://fastapi.tiangolo.com/)
-SQLAlchemy installation instructions [FastAPI docs](https://fastapi.tiangolo.com/tutorial/sql-databases/)
-Pydantic installation instructions [Pydantic website](https://docs.pydantic.dev/install/)
+- FastAPI installation instructions [FastAPI website](https://fastapi.tiangolo.com/)
+- SQLAlchemy installation instructions [FastAPI docs](https://fastapi.tiangolo.com/tutorial/sql-databases/)
+- Pydantic installation instructions [Pydantic website](https://docs.pydantic.dev/install/)
 
 ## 1. Install FastAPI
 
