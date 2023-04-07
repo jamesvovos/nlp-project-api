@@ -130,3 +130,14 @@ def create_intent_response(
     if not db_intent:
         raise HTTPException(status_code=404, detail="Intent not found")
     return intents.create_intent_response(db=db, response=response, intent_id=intent_id)
+
+# delete intent by ID
+
+
+@app.delete("/intents/{intent_id}/")
+def delete_intent(intent_id: int, db: Session = Depends(get_db)):
+    db_intent = intents.get_intent(db, intent_id=intent_id)
+    if db_intent is None:
+        raise HTTPException(
+            status_code=404, detail="Intent with that ID not found")
+    return intents.delete_intent(db=db, intent_id=intent_id)

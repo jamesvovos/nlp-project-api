@@ -9,6 +9,12 @@ import schemas
 def get_intents(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Intent).offset(skip).limit(limit).all()
 
+# get intent by id
+
+
+def get_intent(db: Session, intent_id: int):
+    return db.query(models.Intent).filter(models.Intent.id == intent_id).first()
+
 
 # create
 def create_intent(db: Session, intent: schemas.IntentCreate):
@@ -61,3 +67,13 @@ def create_intent_response(db: Session, response: schemas.ResponseCreate, intent
     db.commit()
     db.refresh(db_pattern)
     return db_pattern
+
+# delete an intent by ID
+
+
+def delete_intent(db: Session, intent_id: int):
+    db_intent = db.query(models.Intent).filter(
+        models.Intent.id == intent_id).first()
+    db.delete(db_intent)
+    db.commit()
+    return {"Intent Deleted": intent_id}
