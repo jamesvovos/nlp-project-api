@@ -77,3 +77,44 @@ def delete_intent(db: Session, intent_id: int):
     db.delete(db_intent)
     db.commit()
     return {"Intent Deleted": intent_id}
+
+# update an intent by ID
+
+# update an intent by ID
+
+
+def update_intent(db: Session, intent_id: int, intent: schemas.Intent):
+    # get the intent from the database
+    db_intent = db.query(models.Intent).filter(
+        models.Intent.id == intent_id).first()
+
+    if db_intent:
+        # update the tag
+        db_intent.tag = intent.tag
+
+        # remove any existing patterns and responses
+        db.query(models.Pattern).filter(
+            models.Pattern.intent_id == intent_id).delete()
+        db.query(models.Response).filter(
+            models.Response.intent_id == intent_id).delete()
+
+        # add the new patterns and responses
+        for pattern in intent.patterns:
+            db_pattern = models.Pattern(
+                text=pattern.text,
+                intent_id=intent_id
+            )
+            db.add(db_pattern)
+
+        for response in intent.responses:
+            db_response = models.Response(
+                text=response.text,
+                intent_id=intent_id
+            )
+            db.add(db_response)
+
+        db.commit()
+
+        return db_intent
+
+    return None
