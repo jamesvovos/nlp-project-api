@@ -80,8 +80,6 @@ def delete_intent(db: Session, intent_id: int):
 
 # update an intent by ID
 
-# update an intent by ID
-
 
 def update_intent(db: Session, intent_id: int, intent: schemas.Intent):
     # get the intent from the database

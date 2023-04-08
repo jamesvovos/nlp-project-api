@@ -164,3 +164,27 @@ def update_intent(intent_id: int, intent: schemas.IntentCreate, db: Session = De
         raise HTTPException(
             status_code=404, detail="Intent with that ID not found")
     return intents.update_intent(db=db, intent_id=intent_id, intent=intent)
+
+
+# delete project by ID
+
+
+@app.delete("/projects/{project_id}/")
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+    db_project = projects.get_project(db, project_id=project_id)
+    if db_project is None:
+        raise HTTPException(
+            status_code=404, detail="Project with that ID not found")
+    return projects.delete_project(db=db, project_id=project_id)
+
+
+# update project by ID
+
+
+@app.put("/projects/{project_id}/", response_model=schemas.Project)
+def update_project(project_id: int, project: schemas.ProjectCreate, db: Session = Depends(get_db)):
+    db_project = projects.get_project(db, project_id=project_id)
+    if db_project is None:
+        raise HTTPException(
+            status_code=404, detail="Project with that ID not found")
+    return projects.update_project(db=db, project_id=project_id, project=project)
