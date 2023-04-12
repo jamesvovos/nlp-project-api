@@ -3,6 +3,8 @@ from pydantic import BaseModel
 
 class NPCBase(BaseModel):
     name: str
+    avatar: str
+    bio: str
     voice: str
     style: str
 

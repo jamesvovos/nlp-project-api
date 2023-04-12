@@ -55,6 +55,10 @@ def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
     if db_npc:
         # update the name
         db_npc.name = npc.name
+        # update the avatar image
+        db_npc.avatar = npc.avatar
+        # update the bio
+        db_npc.bio = npc.bio
         # update the voice
         db_npc.voice = npc.voice
         # update the style

@@ -72,6 +72,8 @@ class NPC(Base):
     __tablename__ = "npcs"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
+    avatar = Column(String, index=True)
+    bio = Column(String, index=True)
     voice = Column(String, index=True)
     style = Column(String, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"))
