@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import schemas
-from services import users, projects, intents
+from services import users, projects, intents, npcs
 from database import models
 
 
@@ -188,3 +188,21 @@ def update_project(project_id: int, project: schemas.ProjectCreate, db: Session 
         raise HTTPException(
             status_code=404, detail="Project with that ID not found")
     return projects.update_project(db=db, project_id=project_id, project=project)
+
+
+# # # NOTE: NEW** create NPC for project
+
+
+@app.post("/projects/{project_id}/npc/", response_model=schemas.NPC)
+def create_npc_for_project(
+    project_id: int, npc: schemas.NPCCreate, db: Session = Depends(get_db)
+):
+    return npcs.create_project_npc(db=db, npc=npc, project_id=project_id)
+
+# get all NPCs
+
+
+@app.get("/npcs/", response_model=list[schemas.NPC])
+def read_npcs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_npcs = npcs.get_npcs(db, skip=skip, limit=limit)
+    return db_npcs
