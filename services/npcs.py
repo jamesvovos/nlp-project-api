@@ -20,11 +20,16 @@ def get_npcs(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_project_npc(db: Session, npc: schemas.NPCCreate, project_id: int):
-    db_npc = models.NPC(**npc.dict(), project_id=project_id)
+    db_npc = models.NPC(**npc.dict())
+    db_project = db.query(models.Project).filter(
+        models.Project.id == project_id).first()
+    db_project.npcs.append(db_npc)
     db.add(db_npc)
     db.commit()
     db.refresh(db_npc)
+    db.refresh(db_project)
     return db_npc
+
 
 # delete NPC by ID
 

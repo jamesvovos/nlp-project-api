@@ -36,7 +36,7 @@ class Project(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     npcs = relationship("NPC", secondary="project_npcs",
-                        back_populates="projects")
+                        back_populates="projects", lazy="joined")
     user = relationship("User", back_populates="projects")
 
 
