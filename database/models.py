@@ -1,7 +1,19 @@
 from .database import Base
-from sqlalchemy import Integer, String, ForeignKey, Column, Boolean
+from sqlalchemy import Table, Integer, String, ForeignKey, Column, Boolean
 from sqlalchemy.orm import relationship
 
+
+# weak entity relationships:
+
+ProjectNPC = Table('project_npcs', Base.metadata,
+                   Column('project_id', Integer, ForeignKey('projects.id')),
+                   Column('npc_id', Integer, ForeignKey('npcs.id'))
+                   )
+
+NPCIntent = Table('npc_intents', Base.metadata,
+                  Column('npc_id', Integer, ForeignKey('npcs.id')),
+                  Column('intent_id', Integer, ForeignKey('intents.id'))
+                  )
 
 # database ORM models and relationships
 
@@ -23,6 +35,8 @@ class Project(Base):
     description = Column(String, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
+    npcs = relationship("NPC", secondary="project_npcs",
+                        back_populates="projects")
     user = relationship("User", back_populates="projects")
 
 
@@ -32,6 +46,8 @@ class Intent(Base):
     tag = Column(String, index=True)
     patterns = relationship("Pattern", back_populates="intent")
     responses = relationship("Response", back_populates="intent")
+    npcs = relationship("NPC", secondary="npc_intents",
+                        back_populates="intents")
 
 
 class Pattern(Base):
@@ -58,21 +74,9 @@ class NPC(Base):
     name = Column(String, index=True)
     voice = Column(String, index=True)
     style = Column(String, index=True)
-
-    # intents = relationship("Intent", back_populates="npcs")
-
-# weak entity relationships:
-
-
-class NPCIntent(Base):
-    __tablename__ = "npc_intents"
-    id = Column(Integer, primary_key=True, index=True)
-    npc_id = Column(Integer, ForeignKey("npcs.id"))
-    intent_id = Column(Integer, ForeignKey("intents.id"))
-
-
-class ProjectNPC(Base):
-    __tablename__ = "project_npcs"
-    id = Column(Integer, primary_key=True, index=True)
     project_id = Column(Integer, ForeignKey("projects.id"))
-    npc_id = Column(Integer, ForeignKey("npcs.id"))
+
+    projects = relationship(
+        "Project", secondary="project_npcs", back_populates="npcs")
+    intents = relationship(
+        "Intent", secondary="npc_intents", back_populates="npcs")

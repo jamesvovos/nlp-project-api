@@ -1,6 +1,23 @@
 from pydantic import BaseModel
 
 
+class NPCBase(BaseModel):
+    name: str
+    voice: str
+    style: str
+
+
+class NPCCreate(NPCBase):
+    pass
+
+
+class NPC(NPCBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
 class ProjectBase(BaseModel):
     name: str
     description: str
@@ -13,6 +30,7 @@ class ProjectCreate(ProjectBase):
 class Project(ProjectBase):
     id: int
     user_id: int
+    npcs: list[NPC] = []
 
     class Config:
         orm_mode = True
@@ -29,23 +47,6 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     projects: list[Project] = []
-
-    class Config:
-        orm_mode = True
-
-
-class NPCBase(BaseModel):
-    name: str
-    voice: str
-    style: str
-
-
-class NPCCreate(NPCBase):
-    pass
-
-
-class NPC(NPCBase):
-    id: int
 
     class Config:
         orm_mode = True
