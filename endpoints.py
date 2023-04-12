@@ -206,3 +206,27 @@ def create_npc_for_project(
 def read_npcs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     db_npcs = npcs.get_npcs(db, skip=skip, limit=limit)
     return db_npcs
+
+
+# delete NPC by ID
+
+
+@app.delete("/npcs/{npc_id}/")
+def delete_npc(npc_id: int, db: Session = Depends(get_db)):
+    db_npc = npcs.get_npc(db, npc_id=npc_id)
+    if db_npc is None:
+        raise HTTPException(
+            status_code=404, detail="NPC with that ID not found")
+    return npcs.delete_npc(db=db, npc_id=npc_id)
+
+
+# update NPC by ID
+
+
+@app.put("/npcs/{npc_id}/", response_model=schemas.NPC)
+def update_npc(npc_id: int, npc: schemas.NPCCreate, db: Session = Depends(get_db)):
+    db_npc = npcs.get_npc(db, npc_id=npc_id)
+    if db_npc is None:
+        raise HTTPException(
+            status_code=404, detail="NPC with that ID not found")
+    return npcs.update_npc(db=db, npc_id=npc_id, npc=npc)

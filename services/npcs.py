@@ -37,9 +37,12 @@ def create_project_npc(db: Session, npc: schemas.NPCCreate, project_id: int):
 def delete_npc(db: Session, npc_id: int):
     db_npc = db.query(models.NPC).filter(
         models.NPC.id == npc_id).first()
+    project = db_npc.projects[0]
+    project.npcs.remove(db_npc)
     db.delete(db_npc)
     db.commit()
     return {"NPC Deleted": npc_id}
+
 
 # update NPC by ID
 
