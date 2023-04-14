@@ -81,4 +81,4 @@ class NPC(Base):
     projects = relationship(
         "Project", secondary="project_npcs", back_populates="npcs")
     intents = relationship(
-        "Intent", secondary="npc_intents", back_populates="npcs")
+        "Intent", secondary="npc_intents", back_populates="npcs", lazy="joined")

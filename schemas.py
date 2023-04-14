@@ -1,59 +1,6 @@
 from pydantic import BaseModel
 
 
-class NPCBase(BaseModel):
-    name: str
-    avatar: str
-    bio: str
-    voice: str
-    style: str
-
-
-class NPCCreate(NPCBase):
-    pass
-
-
-class NPC(NPCBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
-class ProjectBase(BaseModel):
-    name: str
-    description: str
-
-
-class ProjectCreate(ProjectBase):
-    pass
-
-
-class Project(ProjectBase):
-    id: int
-    user_id: int
-    npcs: list[NPC] = []
-
-    class Config:
-        orm_mode = True
-
-
-class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
-    id: int
-    projects: list[Project] = []
-
-    class Config:
-        orm_mode = True
-
-
 class PatternBase(BaseModel):
     text: str
 
@@ -104,6 +51,60 @@ class IntentCreate(IntentBase):
 
 class Intent(IntentBase):
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+class NPCBase(BaseModel):
+    name: str
+    avatar: str
+    bio: str
+    voice: str
+    style: str
+    intents: list[Intent] = []
+
+
+class NPCCreate(NPCBase):
+    pass
+
+
+class NPC(NPCBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class ProjectBase(BaseModel):
+    name: str
+    description: str
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class Project(ProjectBase):
+    id: int
+    user_id: int
+    npcs: list[NPC] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UserBase(BaseModel):
+    email: str
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+    projects: list[Project] = []
 
     class Config:
         orm_mode = True

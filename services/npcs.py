@@ -44,13 +44,12 @@ def delete_npc(db: Session, npc_id: int):
     return {"NPC Deleted": npc_id}
 
 
-# update NPC by ID
+# update NPC by ID / add intents to NPC
 
 
 def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
     # get the NPC from the database
-    db_npc = db.query(models.NPC).filter(
-        models.NPC.id == npc_id).first()
+    db_npc = db.query(models.NPC).filter(models.NPC.id == npc_id).first()
 
     if db_npc:
         # update the name
@@ -64,7 +63,16 @@ def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
         # update the style
         db_npc.style = npc.style
 
-        # constraint: can't update the project the NPC belongs to.
+        # clear the existing intents
+        db_npc.intents = []
 
-    db.commit()
+        # add the selected intents
+        for intent in npc.intents:
+            intent = db.query(models.Intent).filter(
+                models.Intent.id == intent.id).first()
+            if intent:
+                db_npc.intents.append(intent)
+
+        db.commit()
+
     return db_npc
