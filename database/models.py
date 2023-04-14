@@ -25,7 +25,8 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
 
-    projects = relationship("Project", back_populates="user")
+    projects = relationship(
+        "Project", back_populates="user", cascade='all, delete')
 
 
 class Project(Base):
@@ -36,7 +37,7 @@ class Project(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     npcs = relationship("NPC", secondary="project_npcs",
-                        back_populates="projects", lazy="joined")
+                        back_populates="projects", lazy="joined", cascade='all, delete')
     user = relationship("User", back_populates="projects")
 
 
@@ -44,8 +45,10 @@ class Intent(Base):
     __tablename__ = "intents"
     id = Column(Integer, primary_key=True, index=True)
     tag = Column(String, index=True)
-    patterns = relationship("Pattern", back_populates="intent")
-    responses = relationship("Response", back_populates="intent")
+    patterns = relationship(
+        "Pattern", back_populates="intent", cascade='all, delete')
+    responses = relationship(
+        "Response", back_populates="intent", cascade='all, delete')
     npcs = relationship("NPC", secondary="npc_intents",
                         back_populates="intents")
 
