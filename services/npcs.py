@@ -76,3 +76,25 @@ def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
         db.commit()
 
     return db_npc
+
+
+def get_intents(db: Session, npc_id: int):
+    # find the npc by ID
+    db_npc = db.query(models.NPC).filter(
+        models.NPC.id == npc_id).first()
+
+    # create a list to store the intents
+    intents = []
+
+    # loop through each intent and extract its data
+    for intent in db_npc.intents:
+        intent_data = {
+            'id': intent.id,
+            'tag': intent.tag,
+            'patterns': [p.text for p in intent.patterns],
+            'responses': [r.text for r in intent.responses]
+        }
+        intents.append(intent_data)
+
+    # return the list of intents
+    return intents
