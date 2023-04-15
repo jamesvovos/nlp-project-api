@@ -77,6 +77,8 @@ def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
 
     return db_npc
 
+# get the intents associated with an npc via ID
+
 
 def get_intents(db: Session, npc_id: int):
     # find the npc by ID
@@ -98,3 +100,11 @@ def get_intents(db: Session, npc_id: int):
 
     # return the list of intents
     return intents
+
+# AI neural network response
+
+
+def get_response(db: Session, message: str, npc_id: int, training_required: bool):
+    # find the npc by ID
+    db_npc = db.query(models.NPC).filter(
+        models.NPC.id == npc_id).first()

@@ -255,9 +255,9 @@ def get_npc(npc_id: int, db: Session = Depends(get_db)):
 
 
 # API endpoint for AI (call the AI model) #NOTE work in progress.
-@app.post("/chat")
-def chat(message: str, npc_id: int, db: Session = Depends(get_db)):
+@app.post("/chat", response_model=str)
+def chat(message: str, npc_id: int, training_required: bool, db: Session = Depends(get_db)):
     db_npc = npcs.get_npc(db, npc_id=npc_id)
-    response = db_npc.get_response(message)
-    message = {"answer": response}
-    return message
+    response = db_npc.get_response(
+        message, npc_id=npc_id, training_required=training_required)
+    return response
