@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from database import models
 import schemas
+from NpcTrainerAI.chat import ChatBot
 
 # object-relational-mapping (ORM) crud operations (performs SQL under the hood)
 
@@ -104,7 +105,9 @@ def get_intents(db: Session, npc_id: int):
 # AI neural network response
 
 
-def get_response(db: Session, message: str, npc_id: int, training_required: bool):
-    # find the npc by ID
-    db_npc = db.query(models.NPC).filter(
-        models.NPC.id == npc_id).first()
+def get_response(sentence: str, npc_id: int, training_required: bool):
+    chatbot = ChatBot(training_required, npc_id)
+    chatbot.setup()
+    response = chatbot.get_response(sentence)
+    response = {"AI says": response}
+    return response

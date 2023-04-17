@@ -5,8 +5,6 @@ from sqlalchemy.orm import Session
 import schemas
 from services import users, projects, intents, npcs
 from database import models
-
-
 models.Base.metadata.create_all(bind=engine)
 
 # Inject database dependencies into FastAPI
@@ -254,10 +252,19 @@ def get_npc(npc_id: int, db: Session = Depends(get_db)):
     return npcs.get_intents(db=db, npc_id=npc_id)
 
 
-# API endpoint for AI (call the AI model) #NOTE work in progress.
-@app.post("/chat", response_model=str)
-def chat(message: str, npc_id: int, training_required: bool, db: Session = Depends(get_db)):
+# get response from AI chatbot/NPC
+@app.post("/chat/")
+def chat(request_body: dict, db: Session = Depends(get_db)):
+    npc_id = request_body.get("npc_id")
+    sentence = request_body.get("sentence")
+    training_required = request_body.get("training_required")
+
+    # check if the NPC has a valid ID first.
     db_npc = npcs.get_npc(db, npc_id=npc_id)
-    response = db_npc.get_response(
-        message, npc_id=npc_id, training_required=training_required)
+    if db_npc is None:
+        raise HTTPException(
+            status_code=404, detail="NPC with that ID not found")
+
+    response = npcs.get_response(
+        sentence=sentence, npc_id=npc_id, training_required=training_required)
     return response
