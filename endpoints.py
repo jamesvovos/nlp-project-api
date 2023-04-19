@@ -237,6 +237,18 @@ def update_npc(npc_id: int, npc: schemas.NPCCreate, db: Session = Depends(get_db
             status_code=404, detail="NPC with that ID not found")
     return npcs.update_npc(db=db, npc_id=npc_id, npc=npc)
 
+# update NPC avatar by ID
+
+
+@app.put("/npcs/{npc_id}/avatar", response_model=schemas.NPC)
+def update_npc_avatar(npc_id: int, avatar_update: schemas.AvatarUpdate, db: Session = Depends(get_db)):
+    db_npc = npcs.get_npc(db, npc_id=npc_id)
+    if db_npc is None:
+        raise HTTPException(
+            status_code=404, detail="NPC with that ID not found")
+    return npcs.update_npc_avatar(db=db, npc_id=npc_id, avatar=avatar_update.avatar)
+
+
 # get npc by ID
 
 

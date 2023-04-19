@@ -78,6 +78,19 @@ def update_npc(db: Session, npc_id: int, npc: schemas.NPC):
 
     return db_npc
 
+
+# update NPC's avatar image by ID
+
+
+def update_npc_avatar(db: Session, npc_id: int, avatar: str):
+    db_npc = db.query(models.NPC).filter(models.NPC.id == npc_id).first()
+    if db_npc:
+        db_npc.avatar = avatar
+        db.commit()
+        db.refresh(db_npc)
+        return db_npc
+
+
 # get the intents associated with an npc via ID
 
 

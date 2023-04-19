@@ -76,6 +76,10 @@ class NPC(NPCBase):
         orm_mode = True
 
 
+class AvatarUpdate(BaseModel):
+    avatar: str
+
+
 class ProjectBase(BaseModel):
     name: str
     description: str
