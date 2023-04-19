@@ -3,12 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import schemas
+import requests
+from dotenv import load_dotenv
+import os
+from playsound import playsound
 from services import users, projects, intents, npcs
 from database import models
 models.Base.metadata.create_all(bind=engine)
 
 # Inject database dependencies into FastAPI
-# Independent database session/connection per requestm, closes the session after request is finished.
+# Independent database session/connection per request, closes the session after request is finished.
 
 
 def get_db():
@@ -32,6 +36,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# access to Azure Text-To-Speech API
+load_dotenv()
+API_KEY = os.getenv("AZURE_API_KEY")
 
 
 # API Requests/Endpoints
@@ -268,3 +276,37 @@ def chat(request_body: dict, db: Session = Depends(get_db)):
     response = npcs.get_response(
         sentence=sentence, npc_id=npc_id, training_required=training_required)
     return response
+
+
+# NOTE: Get Microsoft Azure Text-To-Speech; save it to MP3 file; then play:
+
+@app.post("/chat/voice")
+def get_voice(
+        voice_name: str, text: str, style: str):
+    url = "https://australiaeast.tts.speech.microsoft.com/cognitiveservices/v1"
+    headers = {
+        "Content-Type": "application/ssml+xml",
+        "Authorization": "Bearer [Base64 access_token]",
+        "X-Microsoft-OutputFormat": "audio-24khz-160kbitrate-mono-mp3",
+        "Ocp-Apim-Subscription-Key": API_KEY,
+        "User-Agent": "NPC-Creator",
+        "Host": "australiaeast.tts.speech.microsoft.com"}
+    body = f"""<?xml version="1.0" encoding="utf-8"?>
+    <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-GB">
+        <voice name="{voice_name}">
+            <mstts:express-as style="{style}" styledegree="2">{text}</mstts:express-as>
+        </voice>
+    </speak>"""
+
+    try:
+        response = requests.post(url, headers=headers, data=body.encode())
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as error:
+        raise HTTPException(
+            status_code=error.response.status_code, detail=error.response.text)
+    # Save audio file
+    with open("output.mp3", "wb") as f:
+        f.write(response.content)
+
+    # Play audio file
+    playsound("output.mp3")
