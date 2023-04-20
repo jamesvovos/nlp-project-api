@@ -4,9 +4,11 @@ from database.database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import schemas
 import requests
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 import os
-from playsound import playsound
+from pydub import AudioSegment
+from pydub.playback import play
 from services import users, projects, intents, npcs
 from database import models
 models.Base.metadata.create_all(bind=engine)
@@ -27,7 +29,14 @@ def get_db():
 app = FastAPI()
 
 # Set up CORS middleware
-origins = ["http://localhost",    "http://localhost:3000", ]
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -293,8 +302,13 @@ def chat(request_body: dict, db: Session = Depends(get_db)):
 # NOTE: Get Microsoft Azure Text-To-Speech; save it to MP3 file; then play:
 
 @app.post("/chat/voice")
-def get_voice(
-        voice_name: str, text: str, style: str):
+async def get_voice(voice_name: str, text: str, style: str):
+    filename = "output.mp3"
+
+    # Delete existing audio file with the same to free up memory.
+    if os.path.exists(filename):
+        os.remove(filename)
+
     url = "https://australiaeast.tts.speech.microsoft.com/cognitiveservices/v1"
     headers = {
         "Content-Type": "application/ssml+xml",
@@ -302,7 +316,8 @@ def get_voice(
         "X-Microsoft-OutputFormat": "audio-24khz-160kbitrate-mono-mp3",
         "Ocp-Apim-Subscription-Key": API_KEY,
         "User-Agent": "NPC-Creator",
-        "Host": "australiaeast.tts.speech.microsoft.com"}
+        "Host": "australiaeast.tts.speech.microsoft.com"
+    }
     body = f"""<?xml version="1.0" encoding="utf-8"?>
     <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-GB">
         <voice name="{voice_name}">
@@ -316,9 +331,22 @@ def get_voice(
     except requests.exceptions.HTTPError as error:
         raise HTTPException(
             status_code=error.response.status_code, detail=error.response.text)
+
     # Save audio file
-    with open("output.mp3", "wb") as f:
+    with open(filename, "wb") as f:
         f.write(response.content)
 
     # Play audio file
-    playsound("output.mp3")
+    audio = AudioSegment.from_file(filename, format="mp3")
+    play(audio)
+
+    # Return audio file as a streaming response
+    def audio_stream():
+        with open(filename, "rb") as f:
+            while True:
+                audio_chunk = f.read(8192)
+                if not audio_chunk:
+                    break
+                yield audio_chunk
+
+    return StreamingResponse(audio_stream(), media_type="audio/mpeg")

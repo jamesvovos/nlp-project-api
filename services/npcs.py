@@ -24,6 +24,8 @@ def create_project_npc(db: Session, npc: schemas.NPCCreate, project_id: int):
     db_npc = models.NPC(**npc.dict())
     db_project = db.query(models.Project).filter(
         models.Project.id == project_id).first()
+    if npc.avatar is not None:
+        db_npc.avatar = npc.avatar
     db_project.npcs.append(db_npc)
     db.add(db_npc)
     db.commit()

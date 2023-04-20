@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class PatternBase(BaseModel):
@@ -58,7 +59,7 @@ class Intent(IntentBase):
 
 class NPCBase(BaseModel):
     name: str
-    avatar: str
+    avatar: Optional[str] = None
     bio: str
     voice: str
     style: str
