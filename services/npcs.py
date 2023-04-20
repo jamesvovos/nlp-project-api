@@ -124,4 +124,7 @@ def get_response(sentence: str, npc_id: int, training_required: bool):
     chatbot = ChatBot(training_required, npc_id)
     chatbot.setup()
     response = chatbot.get_response(sentence)
-    return response
+    if response == None:
+        return "Sorry, I don't understand..."
+    else:
+        return response
