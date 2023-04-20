@@ -296,13 +296,14 @@ def chat(request_body: dict, db: Session = Depends(get_db)):
 
     response = npcs.get_response(
         sentence=sentence, npc_id=npc_id, training_required=training_required)
+    get_voice(db_npc.voice, response, db_npc.style)
     return response
 
 
 # NOTE: Get Microsoft Azure Text-To-Speech; save it to MP3 file; then play:
 
 @app.post("/chat/voice")
-async def get_voice(voice_name: str, text: str, style: str):
+def get_voice(voice_name: str, text: str, style: str):
     filename = "output.mp3"
 
     # Delete existing audio file with the same to free up memory.

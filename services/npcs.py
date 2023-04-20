@@ -124,5 +124,4 @@ def get_response(sentence: str, npc_id: int, training_required: bool):
     chatbot = ChatBot(training_required, npc_id)
     chatbot.setup()
     response = chatbot.get_response(sentence)
-    response = {"AI says": response}
     return response
